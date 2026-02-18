@@ -2,7 +2,11 @@ const prisma = require("../prisma.js");
 
 exports.getBookings = async (req, res) => {
   try {
+    const { guideId } = req.query;
     const bookings = await prisma.booking.findMany({
+      where: guideId
+    ? { guideId: Number(guideId) }
+    : undefined,
       include: {
         trip: true,
         province: true,

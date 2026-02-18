@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express.Router();
 const controller = require('../controllers/auth.controller');
+const authMiddleware = require('../middlewares/auth.middleware');
 
 app.post('/login',
     // #swagger.tags = ['auth']
