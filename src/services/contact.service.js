@@ -1,6 +1,17 @@
 const nodemailer = require("nodemailer");
+const prisma = require("../prisma.js");
 
 exports.sendEmail = async ({ name, email, subject, message }) => {
+
+  await prisma.contact.create({
+    data: {
+      name,
+      email,
+      subject,
+      message,
+    },
+  });
+
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {

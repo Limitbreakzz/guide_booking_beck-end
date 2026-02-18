@@ -306,13 +306,19 @@ exports.updateTrip = async (req, res) => {
 
 exports.deleteTrip = async (req, res) => {
   const tripId = parseInt(req.params.id, 10);
-  if (isNaN(tripId))
+
+  if (isNaN(tripId)) {
     return res.status(400).json({
       status: "error",
       message: "Invalid trip id",
     });
+  }
 
   try {
+    await prisma.booking.deleteMany({
+      where: { tripId: tripId },
+    });
+
     await prisma.trip.delete({
       where: { id: tripId },
     });
@@ -321,15 +327,9 @@ exports.deleteTrip = async (req, res) => {
       status: "success",
       message: "Trip deleted successfully",
     });
+
   } catch (error) {
     console.error("Error deleting trip:", error);
-
-    if (error.code === "P2025") {
-      return res.status(404).json({
-        status: "error",
-        message: "Trip not found",
-      });
-    }
 
     res.status(500).json({
       status: "error",
@@ -337,6 +337,7 @@ exports.deleteTrip = async (req, res) => {
     });
   }
 };
+
 
 exports.getTopTrips = async (req, res) => {
   try {

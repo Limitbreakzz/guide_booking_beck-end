@@ -180,13 +180,19 @@ exports.updateTourist = async (req, res) => {
 
 exports.deleteTourist = async (req, res) => {
   const touristId = parseInt(req.params.id, 10);
-  if (isNaN(touristId))
+
+  if (isNaN(touristId)) {
     return res.status(400).json({
       status: "error",
-      message: "Invalid touris id",
+      message: "Invalid tourist id",
     });
+  }
 
   try {
+    await prisma.booking.deleteMany({
+      where: { touristId: touristId },
+    });
+
     await prisma.tourist.delete({
       where: { id: touristId },
     });
@@ -195,15 +201,9 @@ exports.deleteTourist = async (req, res) => {
       status: "success",
       message: "Tourist deleted successfully",
     });
+
   } catch (error) {
     console.error("Error deleting tourist:", error);
-
-    if (error.code === "P2025") {
-      return res.status(404).json({
-        status: "error",
-        message: "Tourist not found",
-      });
-    }
 
     res.status(500).json({
       status: "error",
@@ -211,3 +211,4 @@ exports.deleteTourist = async (req, res) => {
     });
   }
 };
+

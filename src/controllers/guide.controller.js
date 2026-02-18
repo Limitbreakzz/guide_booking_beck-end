@@ -263,13 +263,23 @@ exports.updateGuide = async (req, res) => {
 
 exports.deleteGuide = async (req, res) => {
   const guideId = parseInt(req.params.id, 10);
-  if (isNaN(guideId))
+
+  if (isNaN(guideId)) {
     return res.status(400).json({
       status: "error",
       message: "Invalid guide id",
     });
+  }
 
   try {
+    await prisma.booking.deleteMany({
+      where: { guideId: guideId },
+    });
+
+    await prisma.trip.deleteMany({
+      where: { guideId: guideId },
+    });
+
     await prisma.guide.delete({
       where: { id: guideId },
     });
@@ -278,15 +288,9 @@ exports.deleteGuide = async (req, res) => {
       status: "success",
       message: "Guide deleted successfully",
     });
+
   } catch (error) {
     console.error("Error deleting guide:", error);
-
-    if (error.code === "P2025") {
-      return res.status(404).json({
-        status: "error",
-        message: "Guide not found",
-      });
-    }
 
     res.status(500).json({
       status: "error",
