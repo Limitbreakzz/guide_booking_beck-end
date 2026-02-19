@@ -33,16 +33,13 @@ app.use('/trips', tripRoute);
 app.use('/bookings', bookingRoute);
 app.use('/contact', contactRoutes);
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.json({
-    message: 'Welcome to the Guide Booking API',
-    endpoints: {
-      documentation: `http://localhost:${PORT}/api-docs`
-    }
+    message: "Welcome to the Guide Booking API",
+    docs: "/api-docs"
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server: http://localhost:${PORT}`);
-  console.log(`API Docs: http://localhost:${PORT}/api-docs`);
+  console.log(`Server running on port ${PORT}`);
 });
