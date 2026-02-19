@@ -9,7 +9,7 @@ app.get('/',
     controller.getGuides
 );
 
-app.get("/guides/top",
+app.get("/top",
     // #swagger.tags = ['Guides']
     // #swagger.description = 'แสดงไกด์ยอดนิยม'
     controller.getTopGuides

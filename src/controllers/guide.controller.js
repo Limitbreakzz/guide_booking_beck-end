@@ -302,52 +302,45 @@ exports.deleteGuide = async (req, res) => {
 exports.getTopGuides = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 3;
-
-    const guides = await prisma.guide.findMany({
-      take: limit,
+  
+    const trips = await prisma.trip.findMany({
       orderBy: {
-        trips: {
+        bookings: {
           _count: "desc",
         },
       },
-
       include: {
+        guide: true,
         _count: {
-          select: {
-            trips: true,
-          },
-        },
-        trips: {
-          select: {
-            _count: {
-              select: {
-                bookings: true,
-              },
-            },
-          },
+          select: { bookings: true },
         },
       },
     });
-    
-    const withBookingTotal = guides.map((g) => {
-      const totalBookings = g.trips.reduce(
-        (sum, t) => sum + (t._count.bookings || 0),
-        0
-      );
 
-      return {
-        ...g,
-        totalBookings,
-      };
+    const guideMap = {};
+    trips.forEach((trip) => {
+      if (!trip.guide) return;
+
+      const guideId = trip.guide.id;
+      const bookingCount = trip._count.bookings || 0;
+
+      if (!guideMap[guideId]) {
+        guideMap[guideId] = {
+          ...trip.guide,
+          totalBookings: 0,
+        };
+      }
+
+      guideMap[guideId].totalBookings += bookingCount;
     });
 
-    const ranked = withBookingTotal
+    const ranked = Object.values(guideMap)
       .sort((a, b) => b.totalBookings - a.totalBookings)
       .slice(0, limit);
 
     res.json({
       status: "success",
-      message: "Top guides by trip bookings fetched successfully",
+      message: "Top guides fetched successfully",
       data: ranked,
     });
 
