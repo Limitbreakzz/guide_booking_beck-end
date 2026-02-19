@@ -81,6 +81,15 @@
                 },
                 "role": {
                   "example": "any"
+                },
+                "tel": {
+                  "example": "any"
+                },
+                "language": {
+                  "example": "any"
+                },
+                "experience": {
+                  "example": "any"
                 }
               }
             }
@@ -204,6 +213,29 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/guides/top": {
+      "get": {
+        "tags": [
+          "Guides"
+        ],
+        "description": "แสดงไกด์ยอดนิยม",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "500": {
             "description": "Internal Server Error"
@@ -391,9 +423,6 @@
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -620,9 +649,6 @@
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1103,9 +1129,6 @@
           "401": {
             "description": "Unauthorized"
           },
-          "404": {
-            "description": "Not Found"
-          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -1350,6 +1373,11 @@
         "description": "แสดงข้อมูลที่ผู้ใช้ส่งเข้ามา",
         "parameters": [
           {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "body",
             "in": "body",
             "schema": {
@@ -1377,6 +1405,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
