@@ -37,12 +37,12 @@ app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to the Guide Booking API',
     endpoints: {
-      documentation: `http://localhost:${PORT}/api-docs`
+      documentation: `${import.meta.env.VITE_API_URL}:${PORT}/api-docs`
     }
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server: http://localhost:${PORT}`);
-  console.log(`API Docs: http://localhost:${PORT}/api-docs`);
+  console.log(`Server running on :${import.meta.env.VITE_API_URL}:${PORT}`);
+  console.log(`API Docs: ${import.meta.env.VITE_API_URL}:${PORT}/api-docs`);
 });
