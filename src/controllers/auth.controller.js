@@ -4,7 +4,15 @@ const authService = require("../services/auth.service");
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const {
+      name,
+      email,
+      password,
+      role,
+      tel,
+      language,
+      experience,
+    } = req.body;
 
     if (!name || !email || !password || !role) {
       return res.status(400).json({ message: "All fields are required" });
@@ -12,6 +20,20 @@ exports.register = async (req, res) => {
 
     if (!["TOURIST", "GUIDE"].includes(role)) {
       return res.status(400).json({ message: "Invalid role" });
+    }
+
+    if (role === "GUIDE") {
+      if (!tel) {
+        return res
+          .status(400)
+          .json({ message: "Tel is required for guide" });
+      }
+
+      if (!/^0[0-9]{9}$/.test(tel)) {
+        return res.status(400).json({
+          message: "Tel must be 10 digits and start with 0",
+        });
+      }
     }
 
     let existingUser;
@@ -35,14 +57,21 @@ exports.register = async (req, res) => {
           name,
           email,
           password: hashedPassword,
+          tel: tel || null,
         },
       });
-    } else {
+    }
+
+    else {
       user = await prisma.guide.create({
         data: {
           name,
           email,
           password: hashedPassword,
+          tel: tel || null,
+          language: language || null,
+          experience: experience || null,
+          status: true,
         },
       });
     }
@@ -68,6 +97,7 @@ exports.register = async (req, res) => {
   }
 };
 
+
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -80,9 +110,7 @@ exports.login = async (req, res) => {
     let role = null;
 
     user = await prisma.admin.findUnique({ where: { email } });
-    if (user) {
-      role = "ADMIN";
-    }
+    if (user) role = "ADMIN";
 
     if (!user) {
       user = await prisma.tourist.findUnique({ where: { email } });
@@ -120,7 +148,6 @@ exports.login = async (req, res) => {
         role,
       },
     });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

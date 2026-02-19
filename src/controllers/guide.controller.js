@@ -157,8 +157,8 @@ exports.createGuide = async (req, res) => {
           tel,
           role: "GUIDE",
           status: true,
-          experience,
-          language,
+          experience: experience || null,
+          language: language || null,
           picture,
         },
       });
