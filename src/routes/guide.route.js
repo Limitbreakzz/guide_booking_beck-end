@@ -9,6 +9,12 @@ app.get('/',
     controller.getGuides
 );
 
+app.get("/guides/top",
+    // #swagger.tags = ['Guides']
+    // #swagger.description = 'แสดงไกด์ยอดนิยม'
+    controller.getTopGuides
+);
+
 app.get("/q/:keyword",
     // #swagger.tags = ['Guides']
     // #swagger.description = 'ค้นหาไกด์'

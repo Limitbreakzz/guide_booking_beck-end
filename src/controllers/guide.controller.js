@@ -298,3 +298,64 @@ exports.deleteGuide = async (req, res) => {
     });
   }
 };
+
+exports.getTopGuides = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 3;
+
+    const guides = await prisma.guide.findMany({
+      take: limit,
+      orderBy: {
+        trips: {
+          _count: "desc",
+        },
+      },
+
+      include: {
+        _count: {
+          select: {
+            trips: true,
+          },
+        },
+        trips: {
+          select: {
+            _count: {
+              select: {
+                bookings: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    
+    const withBookingTotal = guides.map((g) => {
+      const totalBookings = g.trips.reduce(
+        (sum, t) => sum + (t._count.bookings || 0),
+        0
+      );
+
+      return {
+        ...g,
+        totalBookings,
+      };
+    });
+
+    const ranked = withBookingTotal
+      .sort((a, b) => b.totalBookings - a.totalBookings)
+      .slice(0, limit);
+
+    res.json({
+      status: "success",
+      message: "Top guides by trip bookings fetched successfully",
+      data: ranked,
+    });
+
+  } catch (error) {
+    console.error("Error fetching top guides:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
+};
