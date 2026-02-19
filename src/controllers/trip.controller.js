@@ -171,7 +171,7 @@ exports.createTrip = async (req, res) => {
         where: { id: gId },
       });
 
-      if (!guide || guide.role !== "GUIDE") {
+      if (!guide) {
         return res.status(404).json({
           status: "error",
           message: "Guide not found",
